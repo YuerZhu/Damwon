@@ -16,20 +16,32 @@ Our goal would be to make it so that a user is able to submit an image to be enc
 System Overview and Roadmap: (To be implemented in this general order)
 
 Structures:
+
   Pixel, containing rgb values
+  
   Function to determine the correct cipher, possibly by comparing differences of adjacent pixels, or other methods
   
 Encryption: 
+
   Read and store pixels
+  
   Divide pixels into multiple rows, columns, or 2d arrays
+  
   Encrypt rgb values according to use-selected cipher
+  
   Piece together the pixels and output image
+  
     
 Decryption:
+
   Read and store pixels
+  
   Set up multiple threads to change and output each pixel from a provided cipher
+  
   Compare different outputs to determine the best decryption
+  
   Piece together the pixels and output image 
+  
 
 Possible Challenges:
 
