@@ -17,7 +17,7 @@ System Overview and Roadmap: (To be implemented in this general order)
 
 Structures:
 
-  Pixel, containing rgb values
+\t  Pixel, containing rgb values
   
   Function to determine the correct cipher, possibly by comparing differences of adjacent pixels, or other methods
   
