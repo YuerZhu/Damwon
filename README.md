@@ -1,9 +1,9 @@
 Group Name: Damwon
 
-Names and Id’s: 
-Phyllis Wang pjwang3, 
-Mohammad Zayyad mzayy2, 
-David Zhu yuerzhu2, 
+Names (netID): 
+Phyllis Wang (pjwang3), 
+Mohammad Zayyad (mzayy2), 
+David Zhu (yuerzhu2)
 
 Introduction:
 
