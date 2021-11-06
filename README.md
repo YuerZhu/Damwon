@@ -42,8 +42,12 @@ Decryption:
   
   Piece together the pixels and output image 
   
-
 Possible Challenges:
+Since Images have large amounts of data, the biggest challenge is speed and efficiency. In order to speed up the encryption process we plan to use multithreading to utilize the full computational power and speed of modern-day CPUs.
+
+Encryption and Decryption are primarily used for security and data privacy. Another challenge we may face is implementing a reasonably secure and private encryption method to keep private images safe and secure.
+
+Images are notoriously diverse. Aspects like size/resolution, aspect ratio, and color range. Due to this we are faced with the challenge of developing an encryption/decryption program that can be applied sufficiently and efficiently to a wide array of images and image types.
 
 References: 
 
