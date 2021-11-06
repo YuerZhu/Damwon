@@ -44,3 +44,4 @@ Encryption and Decryption are primarily used for security and data privacy. Anot
 Images are notoriously diverse. Aspects like size/resolution, aspect ratio, and color range. Due to this we are faced with the challenge of developing an encryption/decryption program that can be applied sufficiently and efficiently to a wide array of images and image types.
 
 ### References: 
+Inspiration for the project was from the 128H Project Ideas list.
