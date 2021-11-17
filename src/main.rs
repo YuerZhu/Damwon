@@ -1,11 +1,20 @@
 extern crate image;
 
-use image::GenericImageView;
+use image::{GenericImage, GenericImageView, ImageBuffer, Pixel, RgbaImage};
 
 fn main() {
     // Use the open function to load an image from a Path.
     // `open` returns a `DynamicImage` on success.
-    let img = image::open("rust.png").unwrap();
+    let mut img =  image::open("rust.png").unwrap();    
+
+    let mut ret: RgbaImage = ImageBuffer::new(img.dimensions().0, img.dimensions().1);    
+
+    for x in 0..img.dimensions().0{
+        for y in 0..img.dimensions().1 {
+            ret.put_pixel(x, y, img.get_pixel(x, y));
+            ret.get_pixel_mut(x, y).invert();
+        }    
+    }
 
     // The dimensions method returns the images width and height.
     println!("dimensions {:?}", img.dimensions());
@@ -14,5 +23,5 @@ fn main() {
     println!("{:?}", img.color());
 
     // Write the contents of this image to the Writer in PNG format.
-    img.save("test.png").unwrap();
+    ret.save("inverted.png").unwrap();
 }
