@@ -1,6 +1,7 @@
 extern crate image;
 
 pub mod functions;
+pub mod thread;
 
 use image::{DynamicImage, GenericImageView, ImageBuffer, Pixel, RgbImage, RgbaImage, SubImage, imageops};
 
