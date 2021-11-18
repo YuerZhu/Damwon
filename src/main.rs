@@ -1,75 +1,48 @@
 extern crate image;
 
-use image::{GenericImage, GenericImageView, ImageBuffer, Pixel, RgbaImage, DynamicImage};
+use image::{DynamicImage, GenericImageView, ImageBuffer, Pixel, RgbImage, RgbaImage, SubImage, imageops};
 
 fn main() {
     // Use the open function to load an image from a Path.
     // `open` returns a `DynamicImage` on success.
     let mut img =  image::open("rust.png").unwrap();    
 
-    let mut ret: RgbaImage = ImageBuffer::new(img.dimensions().0, img.dimensions().1);    
+    let (vert, horiz) = (3,3);
 
-    for x in 0..img.dimensions().0{
-        for y in 0..img.dimensions().1 {
-            ret.put_pixel(x, y, img.get_pixel(x, y));
-            ret.get_pixel_mut(x, y).invert();
-        }    
+    let vec : Vec<Vec<RgbaImage>> = split_into_chunks(&mut img, vert, horiz).unwrap();
+
+    /* prints out all chunks CREATES A LOT OF FILES
+    for h in 0..vert as usize{
+        for v in 0..horiz as usize{
+            let s = format!("{}{}", h, v) + ".png";
+            vec[h][v].save(s).unwrap();
+        }
     }
-
-    // The dimensions method returns the images width and height.
-    println!("dimensions {:?}", img.dimensions());
-
-    // The color method returns the image's `ColorType`.
-    println!("{:?}", img.color());
-
-    // Write the contents of this image to the Writer in PNG format.
-    ret.save("inverted.png").unwrap();
+    */
+    
 }
 
-fn split_into_chunks(img: DynamicImage, vert: u32, horiz: u32) -> Result<Vec<Vec<RgbaImage>>, ()> {
-    let pixel_width = (img.dimensions().0 / horiz) as u32;
-    let pixel_height = (img.dimensions().1 / vert) as u32;
+fn split_into_chunks(img: &mut DynamicImage, horiz: u32, vert: u32) -> Result<Vec<Vec<RgbaImage>>, ()> {
+    let (width, height) = img.dimensions();
+    let pixel_width = (width / horiz) as u32;
+    let pixel_height = (height / vert) as u32;
+    //Adds all internal subimage chunks (chunks that are full (not edges)) 
     let mut ret: Vec<Vec<RgbaImage>> = Vec::new();
-    for  v in 0..(vert-1) {
+    for  v in 0..vert {
         let mut row: Vec<RgbaImage> = Vec::new();        
-        for h in 0..(horiz-1) {
-            let mut chunk: RgbaImage = ImageBuffer::new(pixel_width, pixel_height);
-            for x in 0..pixel_height{
-                for y in 0..pixel_width{
-                    chunk.put_pixel(x, y, img.get_pixel(pixel_width*h + x, pixel_height*v +y));
-                }    
+        for h in 0..horiz {
+            let mut curwidth = pixel_width;
+            let mut curheight = pixel_height;
+            if h == horiz-1 {
+                curwidth = width - (pixel_width*(horiz-1));
             }
+            if v == vert-1 {
+                curheight = height- (pixel_height*(vert-1));
+            }
+            let chunk= imageops::crop( img, h*pixel_width, v*pixel_height, curwidth, curheight).to_image();
         row.push(chunk);
         }
         ret.push(row);        
     }
-    for v in 0..(vert - 1){
-        let mut chunk: RgbaImage = ImageBuffer::new((img.dimensions().0 -pixel_width*(horiz-1)), pixel_height);
-            for x in 0..(img.dimensions().0 -pixel_width*(horiz-1)){
-                for y in 0..pixel_width{
-                    chunk.put_pixel(x, y, img.get_pixel(pixel_width*(horiz-1) + x, pixel_height*v +y));
-                }    
-            }
-        ret[h].push(chunk);
-    }
-    let mut row: Vec<RgbaImage> = Vec::new();
-    for h in 0..(horiz-1) {        
-        let mut chunk: RgbaImage = ImageBuffer::new(pixel_width, (img.dimensions().1 -pixel_height*(vert-1)));
-            for x in 0..pixel_width{
-                for y in 0..(img.dimensions().1 -pixel_height*(vert-1)){
-                    chunk.put_pixel(x, y, img.get_pixel(pixel_width*h + x, pixel_height*(vert-1) +y));
-                }    
-            }
-        row.push(chunk);
-    }
-    ret.push(row);
-    let mut chunk: RgbaImage = ImageBuffer::new((img.dimensions().0 -pixel_width*(horiz-1)), (img.dimensions().1 -pixel_height*(vert-1)));
-    for x in 0..(img.dimensions().0 -pixel_width*(horiz-1)){
-        for y in 0..(img.dimensions().1 -pixel_height*(vert-1)){
-            chunk.put_pixel(x, y, img.get_pixel(pixel_width*(horiz-1) + x, pixel_height*(vert-1) +y));
-        }    
-    }
-    ret[vert].push(chunk);
-    
     return Ok(ret);
 } 
