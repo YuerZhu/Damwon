@@ -48,7 +48,12 @@ pub fn encrypt(mut img: image::DynamicImage) -> image::DynamicImage{
             }
         }
     }
+<<<<<<< HEAD
     img
+=======
+    //
+    
+>>>>>>> chunks
 }
 
 pub fn decrypt(mut img: image::DynamicImage) -> image::DynamicImage{
