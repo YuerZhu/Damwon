@@ -1,6 +1,6 @@
 extern crate image;
 
-use image::{DynamicImage, GenericImageView, GenericImage,  RgbaImage,  imageops};
+use image::{DynamicImage, GenericImageView, GenericImage,  RgbaImage,  imageops, Pixel};
 
 pub fn split_into_chunks(img: &mut DynamicImage, horiz: u32, vert: u32) -> Result<Vec<Vec<RgbaImage>>, ()> {
     let (width, height) = img.dimensions();
@@ -85,4 +85,77 @@ pub fn decrypt(mut img: image::DynamicImage) -> image::DynamicImage{
         }
     }
     img
+}
+
+pub fn dec(bitSequence: Vec<i32>) -> i32{
+    let mut decimal = 0;
+    for bit in bitSequence{
+        decimal = decimal * 2 + (bit as i32);
+    }
+    return decimal
+}
+
+pub fn genHenonMap( dimension: u32, key: [f64; 2]) -> Vec<Vec<i32>>{
+    let mut x: f64 = key[0];
+    let mut y: f64 = key[1];
+    let seqSize = dimension*dimension*8;
+    let mut bitSequence = Vec::new();
+    let mut byteArray = Vec::new();
+    let mut TImageMatrix = Vec::new();
+    for i in 0..seqSize{
+        let xN = y + 1.0 - 1.4 * x*x;
+        let yN = 0.3 * x;
+
+        x = xN;
+        y = yN;
+        
+        let mut bit = 0;
+
+        if xN<= 0.4 {
+            bit = 0
+        }
+        else {
+            bit = 1
+        }
+
+        bitSequence.push(bit);
+
+        if i % 8 == 7 {
+            let decimal = dec(bitSequence);
+            byteArray.push(decimal);
+        bitSequence = Vec::new();
+        }
+
+        let byteArraySize = dimension*8;
+        if i % byteArraySize == byteArraySize - 1{
+            TImageMatrix.push(byteArray);
+        }
+        byteArray = Vec::new();
+    }
+    return TImageMatrix;
+}
+
+pub fn henonEncrypt(img: image::DynamicImage, key: [f64; 2]) -> RgbaImage {
+    let imageMatrix = img;
+    let dimensionX = img.width();
+    let dimensionY = img.height();
+    
+    let transformationMatrix = genHenonMap(dimensionX, key);
+
+    let mut resultantMatrix: image::ImageBuffer<image::Rgba<u8>, Vec<u8>>;
+
+    for i in 0 as usize..dimensionX as usize{
+        let mut row = Vec::new();
+        for j in 0 as usize..dimensionY as usize{
+            let mult = transformationMatrix[i][j];
+            let temp =  Rgba<u8> {
+                data: [0,0,0,0],
+            };
+            let mut pixel: Pixel = Rgba<u8>(
+            pixel.
+            row.push(
+            }
+        }
+        return resultantMatrix
+
 }
