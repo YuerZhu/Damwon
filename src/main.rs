@@ -1,6 +1,7 @@
 extern crate image;
 
-pub mod functions;
+pub mod henon;
+pub mod chunks;
 pub mod thread;
 
 use image::{DynamicImage, GenericImageView, ImageBuffer, Pixel, RgbImage, RgbaImage, SubImage, imageops};
@@ -11,20 +12,35 @@ fn main() {
 
 
     /* Chunks tutorial */
-    let mut img =  image::open("rust.png").unwrap();    
+    let mut img =  image::open("InputImages/Cat-PNG.png").unwrap();    
 
-    let (vert, horiz) = (3,3);
+    let key = henon::Key {
+        x: 0.1,
+        y: 0.2,
+        horizontal_chunks: 3,
+        vertical_chunks: 3,
+    };
 
-    let vec : Vec<Vec<DynamicImage>> = functions::split_into_chunks(&mut img, vert, horiz).unwrap();
-
+    let vec : Vec<Vec<DynamicImage>> = chunks::split_into_chunks(&mut img, key.horizontal_chunks, key.vertical_chunks).unwrap();
+    let mut fin: Vec<Vec<DynamicImage>>  = Vec::new();
     // prints out all chunks CREATES A LOT OF FILES
-    for h in 0..vert as usize{
-        for v in 0..horiz as usize{
-            let s =  "ImageBin/".to_string() + &*format!("{}{}", h, v) + ".png";
-            functions::henonEncrypt(vec[h][v].to_rgba8(), [0.1,0.1]).save( s).unwrap();
+    for h in 0..key.horizontal_chunks as usize{
+        let mut add: Vec<DynamicImage> = Vec::new();
+        for v in 0..key.vertical_chunks as usize{
+            let s =  "ImageBin/".to_string() + &*format!("{}{}", v, h) + ".png";
+            let temp = henon::henonEncrypt(vec[v][h].to_rgba8(), &key);
+            temp.save( s).unwrap();
+            if fin.len() < v + 1{
+                fin.push(Vec::new());
+            }
+            fin[v].push(temp);
         }
     }
-    
+    let s =  "ImageBin/combined.png";
+    let d =  "ImageBin/decrypted.png";
+    let x = chunks::combine_from_chunks(fin, key.horizontal_chunks, key.vertical_chunks).unwrap();
+    x.save(s).unwrap();
+    henon::henonDecrypt(x.to_rgba8(), &key).save(d).unwrap();
     /* Encrypt tutorial
     // Use the open function to load an image from a Path.
     // `open` returns a `DynamicImage` on success.
