@@ -10,21 +10,21 @@ fn main() {
     // `open` returns a `DynamicImage` on success.
 
 
-    /* Chunks tutorial
+    /* Chunks tutorial */
     let mut img =  image::open("rust.png").unwrap();    
 
     let (vert, horiz) = (3,3);
 
-    let vec : Vec<Vec<RgbaImage>> = functions::split_into_chunks(&mut img, vert, horiz).unwrap();
+    let vec : Vec<Vec<DynamicImage>> = functions::split_into_chunks(&mut img, vert, horiz).unwrap();
 
     // prints out all chunks CREATES A LOT OF FILES
     for h in 0..vert as usize{
         for v in 0..horiz as usize{
             let s =  "ImageBin/".to_string() + &*format!("{}{}", h, v) + ".png";
-            vec[h][v].save( s).unwrap();
+            functions::henonEncrypt(vec[h][v].to_rgba8(), [0.1,0.1]).save( s).unwrap();
         }
     }
-    */
+    
     /* Encrypt tutorial
     // Use the open function to load an image from a Path.
     // `open` returns a `DynamicImage` on success.

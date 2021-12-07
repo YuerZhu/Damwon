@@ -1,15 +1,15 @@
 extern crate image;
 
-use image::{DynamicImage, GenericImageView, GenericImage,  RgbaImage,  imageops, Pixel};
+use image::{DynamicImage, GenericImageView, GenericImage,  RgbaImage,  imageops, Pixel, Rgba};
 
-pub fn split_into_chunks(img: &mut DynamicImage, horiz: u32, vert: u32) -> Result<Vec<Vec<RgbaImage>>, ()> {
+pub fn split_into_chunks(mut img: &mut DynamicImage, horiz: u32, vert: u32) -> Result<Vec<Vec<DynamicImage>>, ()> {
     let (width, height) = img.dimensions();
     let pixel_width = (width / horiz) as u32;
     let pixel_height = (height / vert) as u32;
     //Adds all internal subimage chunks (chunks that are full (not edges)) 
-    let mut ret: Vec<Vec<RgbaImage>> = Vec::new();
+    let mut ret: Vec<Vec<DynamicImage>> = Vec::new();
     for  v in 0..vert {
-        let mut row: Vec<RgbaImage> = Vec::new();        
+        let mut row: Vec<DynamicImage> = Vec::new();        
         for h in 0..horiz {
             let mut curwidth = pixel_width;
             let mut curheight = pixel_height;
@@ -19,13 +19,20 @@ pub fn split_into_chunks(img: &mut DynamicImage, horiz: u32, vert: u32) -> Resul
             if v == vert-1 {
                 curheight = height- (pixel_height*(vert-1));
             }
-            let chunk= imageops::crop( img, h*pixel_width, v*pixel_height, curwidth, curheight).to_image();
-        row.push(chunk);
+            let mut chunk = imageops::crop( img, h*pixel_width, v*pixel_height, curwidth, curheight).to_image();
+            
+            // for i in h*pixel_width..curwidth {
+            //     for j in v*pixel_height..curheight{
+            //         chunk.put_pixel(i, j, img.get_pixel(i, j));
+            //     }
+            // }
+             
+        row.push(DynamicImage::ImageRgba8(chunk));
         }
         ret.push(row);        
     }
     return Ok(ret);
-} 
+}
 
 pub fn encrypt(mut img: image::DynamicImage) -> image::DynamicImage{
     let (width, height) = img.dimensions();
@@ -95,10 +102,10 @@ pub fn dec(bitSequence: Vec<i32>) -> i32{
     return decimal
 }
 
-pub fn genHenonMap( dimension: u32, key: [f64; 2]) -> Vec<Vec<i32>>{
+pub fn genHenonMap( dimensionX: u32, dimensionY: u32, key: [f64; 2]) -> Vec<Vec<i32>>{
     let mut x: f64 = key[0];
     let mut y: f64 = key[1];
-    let seqSize = dimension*dimension*8;
+    let seqSize = dimensionX*dimensionY*8;
     let mut bitSequence = Vec::new();
     let mut byteArray = Vec::new();
     let mut TImageMatrix = Vec::new();
@@ -126,7 +133,7 @@ pub fn genHenonMap( dimension: u32, key: [f64; 2]) -> Vec<Vec<i32>>{
         bitSequence = Vec::new();
         }
 
-        let byteArraySize = dimension*8;
+        let byteArraySize = dimensionY*dimensionX*8;
         if i % byteArraySize == byteArraySize - 1{
             TImageMatrix.push(byteArray);
         }
@@ -135,27 +142,27 @@ pub fn genHenonMap( dimension: u32, key: [f64; 2]) -> Vec<Vec<i32>>{
     return TImageMatrix;
 }
 
-pub fn henonEncrypt(img: image::DynamicImage, key: [f64; 2]) -> RgbaImage {
+pub fn henonEncrypt(img: image::RgbaImage, key: [f64; 2]) -> image::DynamicImage {
     let imageMatrix = img;
-    let dimensionX = img.width();
-    let dimensionY = img.height();
+    let dimensionX = imageMatrix.width();
+    let dimensionY = imageMatrix.height();
     
-    let transformationMatrix = genHenonMap(dimensionX, key);
+    let transformationMatrix = genHenonMap(dimensionX, dimensionY, key);
 
-    let mut resultantMatrix: image::ImageBuffer<image::Rgba<u8>, Vec<u8>>;
+    let mut resultantMatrix: RgbaImage = RgbaImage::new(dimensionX, dimensionY);
 
     for i in 0 as usize..dimensionX as usize{
-        let mut row = Vec::new();
+        let mut row: Vec<Rgba<u8>> = Vec::new();
         for j in 0 as usize..dimensionY as usize{
             let mult = transformationMatrix[i][j];
-            let temp =  Rgba<u8> {
-                data: [0,0,0,0],
-            };
-            let mut pixel: Pixel = Rgba<u8>(
-            pixel.
-            row.push(
-            }
-        }
-        return resultantMatrix
+            let channels = imageMatrix.get_pixel(i as u32, j as u32).channels();
+            let pixel: Rgba<u8> = Pixel::from_channels(mult as u8 ^ channels[0], mult as u8 ^ channels[1], mult as u8 ^ channels[2], mult as u8 ^ channels[3]);
 
+            row.push(pixel);
+        }
+        for a in 0..dimensionY as usize{
+            resultantMatrix.put_pixel(i as u32, a as u32, row[a]);
+        }
+    }
+    return DynamicImage::ImageRgba8(resultantMatrix);
 }
