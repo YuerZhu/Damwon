@@ -28,6 +28,6 @@ pub fn multi_thread_encrypter(key: &'static henon::Key, mut img: &mut DynamicIma
   chunks::combine_from_chunks(vec, key.horizontal_chunks, key.vertical_chunks)
 }
 
-pub fn multi_thread_decrypter(key: &'static henon::Key, mut img: &mut DynamicImage)-> Result<DynamicImage, ()> {
+pub fn multi_thread_decrypter(key: &'static henon::Key, img: &mut DynamicImage)-> Result<DynamicImage, ()> {
   return Ok(multi_thread_encrypter(key, img).unwrap());
 }
