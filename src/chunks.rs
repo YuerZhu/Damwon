@@ -1,4 +1,9 @@
 extern crate image;
+extern crate threadpool;
+use threadpool::ThreadPool;
+use std::{thread, thread::{JoinHandle}};
+use std::sync::{mpsc, mpsc::{Receiver}};
+use crate::henon::Key;
 
 use image::{DynamicImage, GenericImageView, GenericImage,  RgbaImage,  imageops, Pixel, Rgba};
 
@@ -29,6 +34,7 @@ pub fn split_into_chunks(mut img: &mut DynamicImage, horiz: u32, vert: u32) -> R
     }
     return Ok(ret);
 }
+
 
 //combine_from_chunks is the inverse of split_into_chunks and serves the sole purpose of recombining
 //the chunks into one cumulative image.

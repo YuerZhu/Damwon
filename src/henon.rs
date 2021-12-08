@@ -5,12 +5,14 @@ use crate::chunks;
 
 //Key is the key needed to encrypt/decrypt a file, without all four elements of the
 //key it is IMPOSSIBLE to decrypt an image, making it extra secure
+trait Trait: Sync {}
 pub struct Key{
     pub x: f64,
     pub y: f64,
     pub horizontal_chunks: u32,
     pub vertical_chunks: u32,
 }
+impl Trait for Key{}
 
 
 //dec converts a vector of 1's and 0's with length 8 into an integer. This is a clever
