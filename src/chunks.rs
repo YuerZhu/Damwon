@@ -5,6 +5,10 @@ use image::{DynamicImage, GenericImageView, RgbaImage,  imageops};
 
 //split_into_chunks splits an image into a given amount of horizontal and vertical chunks with chunks
 //being as evenly sized as possible. This is designed to make multithreading encryption possible.
+// @param `img` - the image to be split
+// @param  `horiz`, `vert` - the number of times the image is split horizontally and vertically
+// 
+// @return a Vec of Vecs containing the chunks of the image
 pub fn split_into_chunks(img: &mut DynamicImage, horiz: u32, vert: u32) -> Result<Vec<Vec<DynamicImage>>, ()> {
     let (width, height) = img.dimensions();
     let pixel_width = ((width as f32/ horiz as f32) + 0.5) as u32;
@@ -34,6 +38,10 @@ pub fn split_into_chunks(img: &mut DynamicImage, horiz: u32, vert: u32) -> Resul
 
 //combine_from_chunks is the inverse of split_into_chunks and serves the sole purpose of recombining
 //the chunks into one cumulative image.
+// @param `subimgs` - the Vec of Vecs of the split image
+// @param  `horiz`, `vert` - the number of times the image was split horizontally and vertically
+// 
+// @return the combined image
 pub fn combine_from_chunks(subimgs: Vec<Vec<DynamicImage>>, horiz: u32, vert: u32) -> Result< DynamicImage, ()> {
     let mut total_width = 0;
     let mut total_height = 0;

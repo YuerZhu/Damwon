@@ -5,6 +5,11 @@ use std::sync::{mpsc};
 use crate::{henon, chunks};
 use image::{DynamicImage};
 
+// Splits image into chunks and spawns corresponding threads to encrypt each chunk
+// @param `key` - key to generate Henon map
+// @param `img` - image to encrypt
+// 
+// @return encrypted image
 pub fn multi_thread_encrypter(key: &'static henon::Key, mut img: &mut DynamicImage)-> Result<DynamicImage, ()> {
   let chnks = chunks::split_into_chunks(&mut img, key.horizontal_chunks, key.vertical_chunks).unwrap();
   
@@ -28,6 +33,11 @@ pub fn multi_thread_encrypter(key: &'static henon::Key, mut img: &mut DynamicIma
   chunks::combine_from_chunks(vec, key.horizontal_chunks, key.vertical_chunks)
 }
 
+// Splits image into chunks and spawns corresponding threads to decrypt each chunk
+// @param `key` - key to generate Henon map
+// @param `img` - image to decrypt
+// 
+// @return decrypted image
 pub fn multi_thread_decrypter(key: &'static henon::Key, img: &mut DynamicImage)-> Result<DynamicImage, ()> {
   return Ok(multi_thread_encrypter(key, img).unwrap());
 }

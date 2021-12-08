@@ -28,6 +28,10 @@ pub fn dec(bit_sequence: Vec<i32>) -> i32{
 //The HenonMap is used to genrate a matrix of numbers with which each pixel will get
 //transformed by its corresponding indice. This uses the Henon Encryption scheme as well
 //as bits -> int using the dec() function above
+// @param `dimension_x`, `dimension_y` - the dimensions of the image
+// @param `key` - a Key that creates a unique Henon map
+// 
+// @return the generated Henon map
 pub fn gen_henon_map( dimension_x: u32, dimension_y: u32, key: &Key) -> Vec<Vec<i32>>{
     let mut x: f64 = key.x;
     let mut y: f64 = key.y;
@@ -71,6 +75,10 @@ pub fn gen_henon_map( dimension_x: u32, dimension_y: u32, key: &Key) -> Vec<Vec<
 //The henonEncrypt simply takes the henonMap and applies the transformation to every pixel
 //NOTE: the transparency of the pixels never changes which may giveaway the shape of images with 
 //transparent backgrounds or chunks
+// @param `img` - the image to be encrypted
+// @param `key` - the key for the Henon map
+// 
+// @return the encrypted image
 pub fn henon_encrypt(img: image::RgbaImage, key: &Key) -> image::DynamicImage {
     let image_matrix = img;
     let dimension_x = image_matrix.width();
@@ -100,6 +108,10 @@ pub fn henon_encrypt(img: image::RgbaImage, key: &Key) -> image::DynamicImage {
 //the henonEncrypt function operates on chunks, henonDecrypt operates on the full image. As a result, the 
 //encryption can be done with multithreading, but the decryption must be done sequentially and slowly.
 //NOTE: when we finish multithreading make this operate on one chunk only
+// @param `img` - the encrypted image
+// @param `key` - the key for the Henon map
+// 
+// @return the decrypted image
 pub fn henon_decrypt(img: image::RgbaImage, key: &Key) -> image::DynamicImage {
     let mut chunks = chunks::split_into_chunks(&mut DynamicImage::ImageRgba8(img) , key.horizontal_chunks, key.vertical_chunks).unwrap();
     for v in 0..key.vertical_chunks as usize {
