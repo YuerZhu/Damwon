@@ -1,15 +1,11 @@
 extern crate image;
 extern crate threadpool;
-use threadpool::ThreadPool;
-use std::{thread, thread::{JoinHandle}};
-use std::sync::{mpsc, mpsc::{Receiver}};
-use crate::henon::Key;
 
-use image::{DynamicImage, GenericImageView, GenericImage,  RgbaImage,  imageops, Pixel, Rgba};
+use image::{DynamicImage, GenericImageView, RgbaImage,  imageops};
 
 //split_into_chunks splits an image into a given amount of horizontal and vertical chunks with chunks
 //being as evenly sized as possible. This is designed to make multithreading encryption possible.
-pub fn split_into_chunks(mut img: &mut DynamicImage, horiz: u32, vert: u32) -> Result<Vec<Vec<DynamicImage>>, ()> {
+pub fn split_into_chunks(img: &mut DynamicImage, horiz: u32, vert: u32) -> Result<Vec<Vec<DynamicImage>>, ()> {
     let (width, height) = img.dimensions();
     let pixel_width = ((width as f32/ horiz as f32) + 0.5) as u32;
     let pixel_height = ((height as f32/ vert as f32) + 0.5) as u32;
@@ -26,7 +22,7 @@ pub fn split_into_chunks(mut img: &mut DynamicImage, horiz: u32, vert: u32) -> R
             if v == vert-1 {
                 curheight = height- (pixel_height*(vert-1));
             }
-            let mut chunk = imageops::crop( img, h*pixel_width, v*pixel_height, curwidth, curheight).to_image();
+            let chunk = imageops::crop( img, h*pixel_width, v*pixel_height, curwidth, curheight).to_image();
              
         row.push(DynamicImage::ImageRgba8(chunk));
         }

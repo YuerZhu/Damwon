@@ -1,10 +1,9 @@
 extern crate threadpool;
 use threadpool::ThreadPool;
-use std::{thread, thread::{JoinHandle}};
-use std::sync::{mpsc, mpsc::{Receiver}};
+use std::sync::{mpsc};
 
 use crate::{henon, chunks};
-use image::{DynamicImage, GenericImageView, GenericImage,  RgbaImage,  imageops, Pixel, Rgba};
+use image::{DynamicImage};
 
 // pub fn multi_thread_encrypter(key: &'static henon::Key, mut img: &mut DynamicImage)-> Result<DynamicImage, ()> {
 //   let imageMatrix = img.to_rgba8();
@@ -33,14 +32,14 @@ use image::{DynamicImage, GenericImageView, GenericImage,  RgbaImage,  imageops,
 //   Ok(DynamicImage::ImageRgba8(ret))
 // }
 
-pub fn multi_thread_decrypter(key: &'static henon::Key, mut img: &mut DynamicImage)-> Result<DynamicImage, ()> {
+pub fn multi_thread_decrypter(key: &'static henon::Key, img: &mut DynamicImage)-> Result<DynamicImage, ()> {
   return Ok(multi_thread_encrypter(key, img).unwrap());
 }
 
 
 
 pub fn multi_thread_encrypter(key: &'static henon::Key, mut img: &mut DynamicImage)-> Result<DynamicImage, ()> {
-  let mut chnks = chunks::split_into_chunks(&mut img, key.horizontal_chunks, key.vertical_chunks).unwrap();
+  let chnks = chunks::split_into_chunks(&mut img, key.horizontal_chunks, key.vertical_chunks).unwrap();
   
   let pool = ThreadPool::new(key.horizontal_chunks as usize*key.vertical_chunks as usize);
   let (tx,rx) = mpsc::channel();
@@ -50,12 +49,12 @@ pub fn multi_thread_encrypter(key: &'static henon::Key, mut img: &mut DynamicIma
       let tx = tx.clone();      
       let x = chnks[v][h].to_rgba8();
       pool.execute( move || {
-        tx.send((h, v, henon::henonEncrypt(x , key)));
+        tx.send((h, v, henon::henon_encrypt(x , key)));
       });
     }
     }
   let mut vec: Vec<Vec<DynamicImage>> = chnks;
-  for h in 0 as usize..key.horizontal_chunks as usize *key.vertical_chunks as usize{
+  for _h in 0 as usize..key.horizontal_chunks as usize *key.vertical_chunks as usize{
     let (x, y, chunk) = rx.recv().unwrap();
     vec[y][x] = chunk;
   }

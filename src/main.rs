@@ -1,12 +1,7 @@
 extern crate image;
-<<<<<<< HEAD
-pub mod thread;
-=======
 pub mod threading;
->>>>>>> 243d1e7e19016aac939f39ae67f532bc1ef69cd1
 pub mod henon;
 pub mod chunks;
-use image::{DynamicImage, GenericImageView, ImageBuffer, Pixel, RgbImage, RgbaImage, SubImage, imageops};
 use std::env;
 
 static KEY: henon::Key = henon::Key {
@@ -18,13 +13,10 @@ static KEY: henon::Key = henon::Key {
 
 trait Trait: Sync {}
 
-fn main() -> Result<(), ()> {
-    // Use the open function to load an image from a Path.
-    // `open` returns a `DynamicImage` on success.
-
+fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
-        return Err(());
+        return Err("Usage: [encrypt/decrypt] [input file path] [output file path]".to_string());
     }
     let action = &args[1];
     let input = &args[2];
@@ -36,7 +28,7 @@ fn main() -> Result<(), ()> {
         let mut enc =  image::open(input).unwrap();
         threading::multi_thread_decrypter(&KEY, &mut enc).unwrap().save(output).unwrap();
     }else{
-        return Err(());
+        return Err("One or more of your arguments were incorrect. Usage: [encrypt/decrypt] [input file path] [output file path]".to_string());
     }
 
     Ok(())
