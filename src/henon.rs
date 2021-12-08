@@ -109,4 +109,7 @@ pub fn henon_decrypt(img: image::RgbaImage, key: &Key) -> image::DynamicImage {
     }
     return chunks::combine_from_chunks(chunks, key.horizontal_chunks, key.vertical_chunks).unwrap();
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 52b3c79ffe1cecde3289fc1de62df298dbb7b7dd
