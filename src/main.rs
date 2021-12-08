@@ -31,10 +31,10 @@ fn main() -> Result<(), ()> {
     let output = &args[3];
     if action == "encrypt" { // cargo run encrypt InputImages/Forest.jpg ImageBin/combined.png
         let mut img =  image::open(input).unwrap();   
-        thread::multi_thread_encrypter(&KEY, &mut img).unwrap().save(output).unwrap();
+        threading::multi_thread_encrypter(&KEY, &mut img).unwrap().save(output).unwrap();
     }else if action == "decrypt" { // cargo run decrypt ImageBin/combined.png ImageBin/decrypted.png
         let mut enc =  image::open(input).unwrap();
-        thread::multi_thread_decrypter(&KEY, &mut enc).unwrap().save(output).unwrap();
+        threading::multi_thread_decrypter(&KEY, &mut enc).unwrap().save(output).unwrap();
     }else{
         return Err(());
     }
