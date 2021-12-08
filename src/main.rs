@@ -1,30 +1,45 @@
 extern crate image;
+<<<<<<< HEAD
+pub mod thread;
+=======
 pub mod threading;
+>>>>>>> 243d1e7e19016aac939f39ae67f532bc1ef69cd1
 pub mod henon;
 pub mod chunks;
 use image::{DynamicImage, GenericImageView, ImageBuffer, Pixel, RgbImage, RgbaImage, SubImage, imageops};
+use std::env;
 
 static KEY: henon::Key = henon::Key {
     x: 0.1,
     y: 0.2,
-    horizontal_chunks: 7,
-    vertical_chunks: 4,
+    horizontal_chunks: 3,
+    vertical_chunks: 3,
 };
 
 trait Trait: Sync {}
-fn main() {
+
+fn main() -> Result<(), ()> {
     // Use the open function to load an image from a Path.
     // `open` returns a `DynamicImage` on success.
 
+    let args: Vec<String> = env::args().collect();
+    if args.len() != 4 {
+        return Err(());
+    }
+    let action = &args[1];
+    let input = &args[2];
+    let output = &args[3];
+    if action == "encrypt" { // cargo run encrypt InputImages/Forest.jpg ImageBin/combined.png
+        let mut img =  image::open(input).unwrap();   
+        thread::multi_thread_encrypter(&KEY, &mut img).unwrap().save(output).unwrap();
+    }else if action == "decrypt" { // cargo run decrypt ImageBin/combined.png ImageBin/decrypted.png
+        let mut enc =  image::open(input).unwrap();
+        thread::multi_thread_decrypter(&KEY, &mut enc).unwrap().save(output).unwrap();
+    }else{
+        return Err(());
+    }
 
-    /* Chunks tutorial */
-    let mut img =  image::open("InputImages/4k_galaxy.jpg").unwrap();   
-    let s =  "ImageBin/combined.png";
-    threading::multi_thread_encrypter(&KEY, &mut img).unwrap().save(s).unwrap();
-
-    let mut enc =  image::open("ImageBin/combined.png").unwrap();
-    let d =  "ImageBin/decrypted.png";
-    threading::multi_thread_decrypter(&KEY, &mut enc).unwrap().save(d).unwrap();
+    Ok(())
     // chunks::combine_from_chunks(chunks::split_into_chunks(&mut img, 3,3).unwrap(),3,3).unwrap().save(s).unwrap();
     // let vec : Vec<Vec<DynamicImage>> = chunks::split_into_chunks(&mut img, key.horizontal_chunks, key.vertical_chunks).unwrap();
     // let mut fin: Vec<Vec<DynamicImage>>  = Vec::new();
