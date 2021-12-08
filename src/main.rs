@@ -7,8 +7,8 @@ use image::{DynamicImage, GenericImageView, ImageBuffer, Pixel, RgbImage, RgbaIm
 static KEY: henon::Key = henon::Key {
     x: 0.1,
     y: 0.2,
-    horizontal_chunks: 3,
-    vertical_chunks: 3,
+    horizontal_chunks: 7,
+    vertical_chunks: 4,
 };
 
 trait Trait: Sync {}
@@ -18,7 +18,7 @@ fn main() {
 
 
     /* Chunks tutorial */
-    let mut img =  image::open("InputImages/Forest.jpg").unwrap();   
+    let mut img =  image::open("InputImages/4k_galaxy.jpg").unwrap();   
     let s =  "ImageBin/combined.png";
     threading::multi_thread_encrypter(&KEY, &mut img).unwrap().save(s).unwrap();
 
