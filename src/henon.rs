@@ -6,6 +6,7 @@ use crate::chunks;
 //Key is the key needed to encrypt/decrypt a file, without all four elements of the
 //key it is IMPOSSIBLE to decrypt an image, making it extra secure
 trait Trait: Sync {}
+#[derive(Copy, Clone)]
 pub struct Key{
     pub x: f64,
     pub y: f64,
@@ -32,7 +33,7 @@ pub fn dec(bit_sequence: Vec<i32>) -> i32{
 // @param `key` - a Key that creates a unique Henon map
 // 
 // @return the generated Henon map
-pub fn gen_henon_map( dimension_x: u32, dimension_y: u32, key: &Key) -> Vec<Vec<i32>>{
+pub fn gen_henon_map( dimension_x: u32, dimension_y: u32, key: Key) -> Vec<Vec<i32>>{
     let mut x: f64 = key.x;
     let mut y: f64 = key.y;
     let seq_size = dimension_x*dimension_y*8;
@@ -79,7 +80,7 @@ pub fn gen_henon_map( dimension_x: u32, dimension_y: u32, key: &Key) -> Vec<Vec<
 // @param `key` - the key for the Henon map
 // 
 // @return the encrypted image
-pub fn henon_encrypt(img: image::RgbaImage, key: &Key) -> image::DynamicImage {
+pub fn henon_encrypt(img: image::RgbaImage, key: Key) -> image::DynamicImage {
     let image_matrix = img;
     let dimension_x = image_matrix.width();
     let dimension_y = image_matrix.height();
@@ -112,7 +113,7 @@ pub fn henon_encrypt(img: image::RgbaImage, key: &Key) -> image::DynamicImage {
 // @param `key` - the key for the Henon map
 // 
 // @return the decrypted image
-pub fn henon_decrypt(img: image::RgbaImage, key: &Key) -> image::DynamicImage {
+pub fn henon_decrypt(img: image::RgbaImage, key: Key) -> image::DynamicImage {
     let mut chunks = chunks::split_into_chunks(&mut DynamicImage::ImageRgba8(img) , key.horizontal_chunks, key.vertical_chunks).unwrap();
     for v in 0..key.vertical_chunks as usize {
         for h in 0..key.horizontal_chunks as usize {

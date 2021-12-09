@@ -10,7 +10,7 @@ use image::{DynamicImage};
 // @param `img` - image to encrypt
 // 
 // @return encrypted image
-pub fn multi_thread_encrypter(key: &'static henon::Key, mut img: &mut DynamicImage)-> Result<DynamicImage, ()> {
+pub fn multi_thread_encrypter(key: henon::Key, mut img: &mut DynamicImage)-> Result<DynamicImage, ()> {
   let chnks = chunks::split_into_chunks(&mut img, key.horizontal_chunks, key.vertical_chunks).unwrap();
   
   let pool = ThreadPool::new(key.horizontal_chunks as usize*key.vertical_chunks as usize);
@@ -38,6 +38,6 @@ pub fn multi_thread_encrypter(key: &'static henon::Key, mut img: &mut DynamicIma
 // @param `img` - image to decrypt
 // 
 // @return decrypted image
-pub fn multi_thread_decrypter(key: &'static henon::Key, img: &mut DynamicImage)-> Result<DynamicImage, ()> {
+pub fn multi_thread_decrypter(key: henon::Key, img: &mut DynamicImage)-> Result<DynamicImage, ()> {
   return Ok(multi_thread_encrypter(key, img).unwrap());
 }
